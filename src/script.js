@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 function createGlowStyle() {
   const styleElementId = 'code-glow-style';
   const style =
