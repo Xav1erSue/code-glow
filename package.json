@@ -1,6 +1,10 @@
 {
   "name": "code-glow",
   "displayName": "code-glow",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Xav1erSue/code-glow.git"
+  },
   "description": "",
   "version": "0.0.1",
   "engines": {
