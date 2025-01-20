@@ -32,10 +32,12 @@ export function activate(context: vscode.ExtensionContext) {
       // 修改 workbench.html
       const html = fs.readFileSync(htmlFile, 'utf-8');
       if (!html.includes('code-glow.js')) {
-        const output = html.replace(
-          '</html>',
-          `<script src="code-glow.js"></script></html>`,
+        let output = html.replace(
+          /\<\/html\>/g,
+          `<!-- CODE GLOW --><script src="code-glow.js"></script><!-- CODE GLOW -->\n`,
         );
+        output += '</html>';
+
         fs.writeFileSync(htmlFile, output, 'utf-8');
       }
 
@@ -76,7 +78,10 @@ export function activate(context: vscode.ExtensionContext) {
       // 从 workbench.html 中移除脚本引用
       const html = fs.readFileSync(htmlFile, 'utf-8');
       if (html.includes('code-glow.js')) {
-        const output = html.replace('<script src="code-glow.js"></script>', '');
+        const output = html.replace(
+          '<!-- CODE GLOW --><script src="code-glow.js"></script><!-- CODE GLOW -->',
+          '',
+        );
         fs.writeFileSync(htmlFile, output, 'utf-8');
       }
 

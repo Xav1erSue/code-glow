@@ -40,7 +40,7 @@ function createGlowStyle() {
   };
 
   // 监听主题变化
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(() => {
     const tokens = ['mtk6', 'mtk10', 'mtk7', 'mtk9', 'mtk8', 'mtk14'];
 
     let css = '';
@@ -67,9 +67,8 @@ function createGlowStyle() {
 
 export function getInjectedScript() {
   return `
-(function() {
-  ${createGlowStyle.toString()}
-  document.head.appendChild(createGlowStyle());
-})();
+  (function() {
+    document.head.appendChild((${createGlowStyle.toString()})());
+  })();
 `;
 }
