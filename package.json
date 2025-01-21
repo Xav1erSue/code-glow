@@ -8,7 +8,7 @@
   "description": "make your code glow like a neon light!",
   "author": "Xav1erSue",
   "publisher": "Xav1erSue",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.33.0"
   },
