@@ -32,11 +32,10 @@ function createGlowStyle() {
 
     // 计算阴影效果
     return `
-        0 0 8px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5),
-        0 0 16px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.4),
-        0 0 32px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.3),
-        0 0 64px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2),
-        0 0 128px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.1)
+        0 0 2px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2),
+        0 0 4px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.3),
+        0 0 8px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2),
+        0 0 12px rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.1)
     `;
   };
 
