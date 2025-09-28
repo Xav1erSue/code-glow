@@ -5,14 +5,29 @@
 
 English / [简体中文](./README_CN.md)
 
-make your code <span style="color: #fff; text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6, 0 0 25px #0073e6;">glow</span> like a neon light!
+make your code **glow** like a neon light!
 
 </div>
 
-## Enable Glow Effect
+## Feature
+
+- [x] text glow effect
+- [x] automatic theme adaptation
+- [ ] customize brightness
+- [ ] customize glow tokens
+
+## Usage
+
+### 1. Enable glow effect
 
 press `Command + Shift + P` and type `code-glow.enableGlow` to enable glow effect
 
-## Disable Glow Effect
+### 2. Disable glow effect
 
 press `Command + Shift + P` and type `code-glow.disableGlow` to disable glow effect
+
+## Inspiration
+
+this extension is inspired by a VSCode theme [SynthWave '84](https://marketplace.visualstudio.com/items?itemName=RobbOwen.synthwave-vscode)
+
+reimplement the text glow part and make it automatically adapts your own theme.

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as HTMLParser from 'node-html-parser';
 import { getInjectedScript } from './script';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -9,45 +10,61 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       const appDir = path.dirname(vscode.env.appRoot);
       const base = path.join(appDir, 'app', 'out', 'vs', 'code');
-      const electronBase = 'electron-sandbox';
+
+      const electronSandboxExists = fs.existsSync(
+        path.join(base, 'electron-sandbox'),
+      );
+
+      /**
+       * Determine whether to use `electron-sandbox` or `electron-browser`
+       * based on the existence of the `electron-sandbox` directory.
+       * This ensures compatibility with different VSCode versions.
+       * The VSCode's source code organization has changed since 2025 Jun 7.
+       * https://github.com/microsoft/vscode/wiki/Source-Code-Organization/_compare/2a134087edd2fe82b7e051cb7ed97082c7c7a2ca
+       */
+      const electronBase = electronSandboxExists
+        ? 'electron-sandbox'
+        : 'electron-browser';
+
       const htmlFile = path.join(
         base,
         electronBase,
         'workbench',
         'workbench.html',
       );
-      const templateFile = path.join(
-        base,
-        electronBase,
-        'workbench',
-        'code-glow.js',
-      );
 
-      // 创建注入脚本
+      // write `code-glow.js`
+      const jsFile = path.join(base, electronBase, 'workbench', 'code-glow.js');
       const scriptContent = getInjectedScript();
+      fs.writeFileSync(jsFile, scriptContent);
 
-      // 写入脚本文件
-      fs.writeFileSync(templateFile, scriptContent);
-
-      // 修改 workbench.html
+      // modify `workbench.html`
       const html = fs.readFileSync(htmlFile, 'utf-8');
-      if (!html.includes('code-glow.js')) {
-        let output = html.replace(
-          /\<\/html\>/g,
-          `<!-- CODE GLOW --><script src="code-glow.js"></script><!-- CODE GLOW -->\n`,
-        );
-        output += '</html>';
+      const root = HTMLParser.parse(html);
+      const head = root.querySelector('head');
+      const scriptElement = root.querySelector('script[src="code-glow.js"]');
 
-        fs.writeFileSync(htmlFile, output, 'utf-8');
+      if (scriptElement) {
+        scriptElement.remove();
       }
 
-      vscode.window
-        .showInformationMessage('Glow effect enabled.', {
-          title: 'Restart editor to complete',
-        })
-        .then(() => {
-          vscode.commands.executeCommand('workbench.action.reloadWindow');
+      if (head) {
+        head.appendChild(
+          HTMLParser.parse(`<script src="code-glow.js"></script>`).firstChild!,
+        );
+        fs.writeFileSync(htmlFile, root.toString(), 'utf-8');
+        vscode.window
+          .showInformationMessage('Glow effect enabled.', {
+            title: 'Restart editor to complete',
+          })
+          .then(() => {
+            vscode.commands.executeCommand('workbench.action.reloadWindow');
+          });
+      } else {
+        vscode.window.showInformationMessage('Glow effect enable failed!', {
+          title: 'cannot find <head> tag in workbench.html!',
         });
+      }
     },
   );
 
@@ -56,38 +73,48 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       const appDir = path.dirname(vscode.env.appRoot);
       const base = path.join(appDir, 'app', 'out', 'vs', 'code');
-      const electronBase = 'electron-sandbox';
+
+      const electronSandboxExists = fs.existsSync(
+        path.join(base, 'electron-sandbox'),
+      );
+
+      /**
+       * Determine whether to use `electron-sandbox` or `electron-browser`
+       * based on the existence of the `electron-sandbox` directory.
+       * This ensures compatibility with different VSCode versions.
+       * The VSCode's source code organization has changed since 2025 Jun 7.
+       * https://github.com/microsoft/vscode/wiki/Source-Code-Organization/_compare/2a134087edd2fe82b7e051cb7ed97082c7c7a2ca
+       */
+      const electronBase = electronSandboxExists
+        ? 'electron-sandbox'
+        : 'electron-browser';
+
       const htmlFile = path.join(
         base,
         electronBase,
         'workbench',
         'workbench.html',
       );
-      const templateFile = path.join(
-        base,
-        electronBase,
-        'workbench',
-        'code-glow.js',
-      );
+      const jsFile = path.join(base, electronBase, 'workbench', 'code-glow.js');
 
-      // 删除注入的脚本文件
-      if (fs.existsSync(templateFile)) {
-        fs.unlinkSync(templateFile);
+      // remove `code-glow.js`
+      if (fs.existsSync(jsFile)) {
+        fs.unlinkSync(jsFile);
       }
 
-      // 从 workbench.html 中移除脚本引用
+      // modify `workbench.html`
       const html = fs.readFileSync(htmlFile, 'utf-8');
-      if (html.includes('code-glow.js')) {
-        const output = html.replace(
-          '<!-- CODE GLOW --><script src="code-glow.js"></script><!-- CODE GLOW -->',
-          '',
-        );
-        fs.writeFileSync(htmlFile, output, 'utf-8');
+      const root = HTMLParser.parse(html);
+      const scriptElement = root.querySelector('script[src="code-glow.js"]');
+
+      if (scriptElement) {
+        scriptElement.remove();
+        fs.writeFileSync(htmlFile, root.toString(), 'utf-8');
       }
 
       vscode.window
         .showInformationMessage('Glow effect disabled.', {
-          title: 'Restart editor to complete',
+          title: 'Restart editor to activate',
         })
         .then(() => {
           vscode.commands.executeCommand('workbench.action.reloadWindow');
